@@ -17,7 +17,7 @@ FSIZES = [4,4,4]
 
 # showPlots indicates if plots should be displayed or not 
 showPlots = True  
-showAnimations = False
+showAnimations =  True
 
 
 '''
