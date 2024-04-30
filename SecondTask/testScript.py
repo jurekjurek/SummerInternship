@@ -17,7 +17,7 @@ FSIZES = [4,4,4]
 
 # showPlots indicates if plots should be displayed or not 
 showPlots = True  
-showAnimations =  True
+showAnimations =  False
 
 
 '''
@@ -52,13 +52,13 @@ if showPlots:
 
     print(len(processingBlockArrangementDisplaying))
 
-    plt.figure()
-    plt.plot(tempCostList, label = 'cost')
-    plt.title('Evolution of total cost, deterministic optimization \n')
-    plt.xlabel('Iterations')
-    plt.ylabel('Cost')
-    plt.legend()
-    plt.show()
+    # plt.figure()
+    # plt.plot(tempCostList, label = 'cost')
+    # plt.title('Evolution of total cost, deterministic optimization \n')
+    # plt.xlabel('Iterations')
+    # plt.ylabel('Cost')
+    # plt.legend()
+    # plt.show()
 
     
 
@@ -85,13 +85,13 @@ if showPlots:
     for i in range(len(processingBlockArrangementDisplaying)):
         tempCostList.append( computeTotalCost(computeArrangements(processingBlockArrangementDisplaying[i], FSIZES, MMAX), NQ) )
 
-    plt.figure()
-    plt.plot(tempCostList, label = 'cost')
-    plt.title('Evolution of total cost, tabu search \n')
-    plt.xlabel('Iterations')
-    plt.ylabel('Cost')
-    plt.legend()
-    plt.show()
+    # plt.figure()
+    # plt.plot(tempCostList, label = 'cost')
+    # plt.title('Evolution of total cost, tabu search \n')
+    # plt.xlabel('Iterations')
+    # plt.ylabel('Cost')
+    # plt.legend()
+    # plt.show()
 
 
 
@@ -111,18 +111,19 @@ if showPlots:
     temporaryCost = computeTotalCost(computeArrangements(processingBlockArrangementAfterAlternatingSearch, FSIZES, MMAX), NQ)
     visualize_blocks(processingBlockArrangementAfterAlternatingSearch, 'Processing block arrangement after alternating search, cost: ' + str(temporaryCost))
 
-    plt.figure()
-    plt.plot(costEvolution, label = 'cost')
-    plt.title('Evolution of total cost with alternating iterations \n')
-    plt.xlabel('Iterations')
-    plt.ylabel('Cost')
-    plt.legend()
-    plt.show()
+    # plt.figure()
+    # plt.plot(costEvolution, label = 'cost')
+    # plt.title('Evolution of total cost with alternating iterations \n')
+    # plt.xlabel('Iterations')
+    # plt.ylabel('Cost')
+    # plt.legend()
+    # plt.show()
 
 
 
 if showAnimations: 
     animate_solving(processingBlockArrangementDisplaying, 'Animation of optimization with tabu search')
+
 
 processingBlockArrangementDisplaying, costEvolution, processingBlockArrangementAfterAlternatingSearch = optimizeArrangements(processingBlockArrangement, NQ, FSIZES, QMAX, MMAX, numOptimizationSteps= 15, TSiterations= 100, tabuListLength= 100, echo = True, visualOutput = False, improvementFactor=1)
 
