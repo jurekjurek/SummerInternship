@@ -36,6 +36,13 @@ def checkLinearIndependency(cliqueList: list) -> bool:
     return True
 
 
+def linearlyIndependent(pauliStringOne, pauliStringTwo):
+    '''
+    ...
+    '''
+
+    return True 
+
 '''
 Commutation functions
 
@@ -202,6 +209,12 @@ def find_max_clique(Graph, clique_list):
     '''
     To be used iteratively, gets as Input a graph and a list with all the maximum cliques so far 
     Adds the maximum clique of the current graph to the list and stops when theres only one clique left. 
+
+    Remember that we have to use this iterative function, because the clique that the method 
+                                        
+                                        find_cliques() 
+    
+    returns, can contain the same nodes in multiple cliques!  
     '''
 
     # copy graph, we dont want to manipulate the original Graph
@@ -209,8 +222,8 @@ def find_max_clique(Graph, clique_list):
     
 
     all_cliques_list = list(nx.find_cliques(graph))
-    print('all list: ',all_cliques_list)
-    print('max element: ', all_cliques_list[0])
+    # print('all list: ',all_cliques_list)
+    # print('max element: ', all_cliques_list[0])
     clique_list.append(all_cliques_list[0])
 
     if len(all_cliques_list) != 1:
@@ -261,10 +274,36 @@ def draw_new_Graph(resulting_families, title):
 Given a list of cliques and a list of weights, which might be either negative or positive, return a list of cliques, sorted by the weights of the Paulistrings 
 '''
 
-def FindOrderedCliques(cliques: list, weights: dict)->list:
+# def FindOrderedCliques(cliques: list, weights: dict)->list:
+#     '''
+    
+#     '''
+
+#     for clique in range(len(cliques)): 
+
+
+def PadCliques(clique: list) -> list:
+    '''
+    If a clique is shorter than nQ, pad it with trivial Pauli strings 
     '''
     
+
+
+
+
+
+
+
+def SummedWeigth(clique: list, weigths: dict): 
+    '''
+    get the summed weight of all paulistrings in a clique 
     '''
 
-    for clique in range(len(cliques)): 
+    totalWeight: float = 0
+
+    for pauliString in clique: 
+        totalWeight += np.abs(weigths[pauliString])
+
+    return totalWeight
+
 
