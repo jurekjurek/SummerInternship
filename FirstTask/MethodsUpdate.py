@@ -29,19 +29,87 @@ def check_Paulistring(paulistrings):
     return True
 
 
-def checkLinearIndependency(cliqueList: list) -> bool:
+def PauliStringToMatrix(pauliString: str):
     '''
-    check if, in a list of cliques, all elements in every clique are linearly independent to all others. 
-    '''
-    return True
-
-
-def linearlyIndependent(pauliStringOne, pauliStringTwo):
-    '''
-    ...
+    this function turns a pauli string into a matrix 
     '''
 
-    return True 
+    firstPauli = pauliString[0]
+    restOfPaulis = pauliString[1:]
+
+    X = np.array([[0,1], [1,0]])
+    Y = np.array([[0, -1j], [1j, 0]])
+    Z = np.array([[1, 0], [0, -1]])
+
+    if firstPauli == 'X': 
+        pauliMatrix = X
+    elif firstPauli == 'Y':
+        pauliMatrix = Y
+    elif firstPauli == 'Z':
+        pauliMatrix = Z
+    else: 
+        pauliMatrix = np.eye(2)
+
+    
+    for pauli in restOfPaulis: 
+        if pauli == 'X': 
+            pauliMatrix = np.kron(pauliMatrix, X)
+        elif pauli == 'Y':
+            pauliMatrix = np.kron(pauliMatrix, Y)
+        elif pauli == 'Z':
+            pauliMatrix = np.kron(pauliMatrix, Z)
+        else: 
+            pauliMatrix = np.kron(pauliMatrix, np.eye(2))
+
+    print(pauliString)
+    print(np.shape(pauliMatrix))
+
+    return pauliMatrix
+
+
+def checkLinearIndependency(clique: list[str]):
+    '''
+    check if, in a given cliques, all elements are linearly independent to all others. 
+
+    The set of matrices in the clique are linearly independent, if: 
+    
+                alpha p_1 + beta p_2 + ... = 0   iff   alpha, beta, ... = 0
+
+    
+    '''
+    cliqueMatrices = [PauliStringToMatrix(pauliString= pauliString) for pauliString in clique]
+
+
+    # turn these into a new system to apply the linalg solve thing 
+
+    vectorList = [matrix.flatten(order='F') for matrix in cliqueMatrices]
+
+    newMatrix = np.column_stack((vectorList))
+
+    # # newMatrix = newMatrix.reshape((2,4))
+
+    # print('new Matrix', newMatrix, np.shape(newMatrix))
+
+    matrixOfInterest = np.hstack(cliqueMatrices) 
+
+    rank = np.linalg.matrix_rank(newMatrix)
+
+    isIndep: bool = rank == len(cliqueMatrices)
+
+    return isIndep
+    zeroMatrix = np.zeros(len(cliqueMatrices))
+    print(zeroMatrix)
+
+    zeroMatrix = zeroMatrix.transpose()
+
+    result = np.linalg.lstsq(np.array(newMatrix), zeroMatrix)
+
+    return result 
+
+
+
+# test = checkLinearIndependency(['ZX', 'ZX'])
+# print(test)
 
 '''
 Commutation functions
@@ -282,11 +350,42 @@ Given a list of cliques and a list of weights, which might be either negative or
 #     for clique in range(len(cliques)): 
 
 
-def PadCliques(clique: list) -> list:
+def PadClique(clique: list, QWC: bool = False) -> list:
     '''
     If a clique is shorter than nQ, pad it with trivial Pauli strings 
+
+    The challenge is to find trivial Pauli strings. Trivial means having as many ones as possible in the Pauli string  
     '''
-    
+    nQ = len(clique[0])
+
+    noStringsToBeAdded = nQ - len(clique)
+
+    # list of trivial strings. IIII as first element since it is the most trivial 
+    trivialStrings = ['IIII', 'XIII', 'IXII', 'IIXI', 'IIIX', 'YIII', 'IYII', 'IIYI', 'IIIY', 'ZIII', 'IZII', 'IIZI', 'IIIZ']
+
+
+    for trivialString in trivialStrings: 
+        if trivialString in clique: 
+            continue
+        for pauliString in range(len(clique)): 
+            if not QWC and not GC_commutes(trivialString, pauliString): 
+
+                # if trivialstring does not commute with at least one of the paulistrings in the clique, break
+                break
+
+            elif QWC and not QWC_commutes(trivialString, pauliString): 
+
+                # if trivialstring does not commute with at least one of the paulistrings in the clique, break
+                break
+
+        clique.append(trivialString)
+        noStringsToBeAdded -= 1
+
+        if noStringsToBeAdded == 0: 
+            break 
+
+
+    return clique 
 
 
 
@@ -294,7 +393,9 @@ def PadCliques(clique: list) -> list:
 
 
 
-def SummedWeigth(clique: list, weigths: dict): 
+
+
+def SummedWeight(clique: list, weigths: dict): 
     '''
     get the summed weight of all paulistrings in a clique 
     '''
